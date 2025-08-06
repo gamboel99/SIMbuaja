@@ -1,51 +1,47 @@
-
-import streamlit as st
-from login import login_form
-import streamlit as st
-
-st.set_page_config(page_title="Rencana Kerja BUMDes", layout="wide")
-st.title("📚 Sistem Rencana Kerja BUMDes Buwana Raharja")
-
-st.markdown("""
-Selamat datang di sistem manajemen rencana kerja dan evaluasi kinerja.
-Silakan gunakan menu di sebelah kiri untuk:
-- Mengisi rencana kerja per jabatan
-- Melihat tabel rencana
-- Menerbitkan SPK
-- Mengevaluasi capaian kinerja
-
-💡 Sistem ini terintegrasi antar jabatan dan mendukung pemantauan berkelanjutan.
-""")
-
-st.set_page_config(page_title="SIM BUMDes PRO", layout="wide")
-st.title("🧮 Sistem Informasi Manajemen BUMDes Buwana Raharja")
-
-role = login_form()
-
-if role == "admin":
-    st.success("Login sebagai ADMIN")
-    st.markdown("Silakan pilih menu di sidebar untuk mengakses semua fitur.")
-elif role == "operator":
-    st.warning("Login sebagai OPERATOR")
-    st.markdown("Akses terbatas untuk input data unit usaha.")
-else:
-    st.info("Silakan login untuk melanjutkan.")
-
 import streamlit as st
 from streamlit_option_menu import option_menu
+from login import login_form
 
+# Konfigurasi halaman
 st.set_page_config(page_title="SIM BUMDes Buwana Raharja", layout="wide")
 
+# Judul utama
+st.title("🧮 Sistem Informasi Manajemen BUMDes Buwana Raharja")
+
+# Autentikasi pengguna
+role = login_form()
+
+# Menampilkan informasi login
+if role == "admin":
+    st.success("Login sebagai ADMIN")
+elif role == "operator":
+    st.warning("Login sebagai OPERATOR")
+else:
+    st.info("Silakan login untuk melanjutkan.")
+    st.stop()  # Menghentikan eksekusi jika belum login
+
+# Sidebar navigasi
 with st.sidebar:
     selected = option_menu("Menu", [
         "Beranda",
         "Monitoring Usaha",
         "Laporan Tahunan",
-        "Rencana Kerja",  # <== Tambahkan ini
+        "Rencana Kerja",
     ])
 
+# Routing ke masing-masing halaman
 if selected == "Beranda":
-    st.title("Selamat Datang di SIM BUMDes Buwana Raharja")
+    st.markdown("""
+    ## 📚 Selamat datang di SIM BUMDes Buwana Raharja
+
+    Silakan gunakan menu di sebelah kiri untuk:
+    - Mengisi rencana kerja per jabatan
+    - Melihat tabel rencana
+    - Menerbitkan SPK
+    - Mengevaluasi capaian kinerja
+
+    💡 Sistem ini terintegrasi antar jabatan dan mendukung pemantauan berkelanjutan.
+    """)
 
 elif selected == "Monitoring Usaha":
     from pages import monitoring_usaha
