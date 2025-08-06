@@ -1,10 +1,17 @@
+
 import streamlit as st
-from auth.login import login
+from login import login_form
 
-st.set_page_config(page_title="SIM BUMDes Buwana Raharja", layout="wide")
+st.set_page_config(page_title="SIM BUMDes PRO", layout="wide")
+st.title("🧮 Sistem Informasi Manajemen BUMDes Buwana Raharja")
 
-if 'authenticated' not in st.session_state or not st.session_state['authenticated']:
-    login()
+role = login_form()
+
+if role == "admin":
+    st.success("Login sebagai ADMIN")
+    st.markdown("Silakan pilih menu di sidebar untuk mengakses semua fitur.")
+elif role == "operator":
+    st.warning("Login sebagai OPERATOR")
+    st.markdown("Akses terbatas untuk input data unit usaha.")
 else:
-    st.title("Selamat Datang di SIM BUMDes Buwana Raharja")
-    st.write("Gunakan menu di sidebar untuk navigasi modul.")
+    st.info("Silakan login untuk melanjutkan.")
