@@ -15,3 +15,31 @@ elif role == "operator":
     st.markdown("Akses terbatas untuk input data unit usaha.")
 else:
     st.info("Silakan login untuk melanjutkan.")
+
+import streamlit as st
+from streamlit_option_menu import option_menu
+
+st.set_page_config(page_title="SIM BUMDes Buwana Raharja", layout="wide")
+
+with st.sidebar:
+    selected = option_menu("Menu", [
+        "Beranda",
+        "Monitoring Usaha",
+        "Laporan Tahunan",
+        "Rencana Kerja",  # <== Tambahkan ini
+    ])
+
+if selected == "Beranda":
+    st.title("Selamat Datang di SIM BUMDes Buwana Raharja")
+
+elif selected == "Monitoring Usaha":
+    from pages import monitoring_usaha
+    monitoring_usaha.run()
+
+elif selected == "Laporan Tahunan":
+    from pages import laporan_tahunan
+    laporan_tahunan.run()
+
+elif selected == "Rencana Kerja":
+    from pages import rencana_kerja
+    rencana_kerja.run()
