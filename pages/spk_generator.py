@@ -1,72 +1,95 @@
 import streamlit as st
-from fpdf import FPDF
-import qrcode
-from io import BytesIO
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.units import cm
+import barcode
+from barcode.writer import ImageWriter
+from PIL import Image
+import os
+from datetime import datetime
+import io
 
-class SPKGenerator:
-    def __init__(self, nama_kegiatan, tanggal_mulai, tanggal_selesai, lokasi, penerima_tugas, uraian_tugas):
-        self.nama_kegiatan = nama_kegiatan
-        self.tanggal_mulai = tanggal_mulai
-        self.tanggal_selesai = tanggal_selesai
-        self.lokasi = lokasi
-        self.penerima_tugas = penerima_tugas
-        self.uraian_tugas = uraian_tugas
+def generate_barcode(spk_number):
+    ean = barcode.get('code128', spk_number, writer=ImageWriter())
+    filename = f"barcode_{spk_number}"
+    fullname = ean.save(filename)
+    return fullname
 
-    def generate_qr(self, text):
-        qr = qrcode.QRCode(box_size=2, border=1)
-        qr.add_data(text)
-        qr.make(fit=True)
-        img = qr.make_image(fill_color="black", back_color="white")
-        buf = BytesIO()
-        img.save(buf)
-        return buf
+def generate_spk_pdf(spk_number, kegiatan, nama_penerima, jabatan_penerima):
+    buffer = io.BytesIO()
+    c = canvas.Canvas(buffer, pagesize=A4)
+    width, height = A4
 
-    def generate_pdf(self):
-        pdf = FPDF()
-        pdf.add_page()
-        pdf.set_font("Arial", "B", 14)
+    # Header
+    c.setFont("Helvetica-Bold", 14)
+    c.drawCentredString(width/2, height - 2*cm, "SURAT PERINTAH KERJA (SPK)")
+    c.setFont("Helvetica", 12)
+    c.drawCentredString(width/2, height - 2.7*cm, "BUMDes BUWANA Raharja")
 
-        # Header
-        pdf.cell(0, 10, "BADAN USAHA MILIK DESA (BUMDes)", ln=True, align="C")
-        pdf.cell(0, 10, "BUWANA RAHARJA", ln=True, align="C")
-        pdf.set_font("Arial", "", 10)
-        pdf.cell(0, 10, "Alamat: Jl. Raya Keling, Bukaan, Keling, Kec. Kepung, Kabupaten Kediri, Jawa Timur 64293", ln=True, align="C")
-        pdf.ln(10)
+    # Nomor SPK
+    c.setFont("Helvetica", 11)
+    c.drawString(2.5*cm, height - 4*cm, f"Nomor SPK: {spk_number}")
+    c.drawString(2.5*cm, height - 5*cm, f"Tanggal: {datetime.now().strftime('%d-%m-%Y')}")
 
-        # Judul
-        pdf.set_font("Arial", "B", 12)
-        pdf.cell(0, 10, "SURAT PERINTAH KERJA (SPK)", ln=True, align="C")
-        pdf.ln(5)
+    # Isi
+    c.drawString(2.5*cm, height - 6.5*cm, "Dengan ini memerintahkan kepada:")
 
-        # Isi
-        pdf.set_font("Arial", "", 11)
-        pdf.multi_cell(0, 8, f"Dengan ini memberikan perintah kepada:\n\nNama\t\t\t: {self.penerima_tugas}\n\n"
-                             f"Untuk melaksanakan kegiatan:\n\nJudul Kegiatan\t: {self.nama_kegiatan}\n"
-                             f"Lokasi\t\t\t: {self.lokasi}\n"
-                             f"Tanggal Mulai\t: {self.tanggal_mulai}\n"
-                             f"Tanggal Selesai\t: {self.tanggal_selesai}\n\n"
-                             f"Uraian Tugas:\n{self.uraian_tugas}\n")
+    c.setFont("Helvetica-Bold", 11)
+    c.drawString(3.5*cm, height - 7.5*cm, f"Nama      : {nama_penerima}")
+    c.drawString(3.5*cm, height - 8.2*cm, f"Jabatan   : {jabatan_penerima}")
 
-        pdf.ln(5)
+    c.setFont("Helvetica", 11)
+    c.drawString(2.5*cm, height - 9.5*cm, "Untuk melaksanakan kegiatan:")
+    c.setFont("Helvetica-Bold", 11)
+    textobject = c.beginText(3*cm, height - 10.5*cm)
+    for line in kegiatan.split('\n'):
+        textobject.textLine(f"- {line}")
+    c.drawText(textobject)
 
-        # QR Code
-        qr_buf = self.generate_qr(f"{self.nama_kegiatan} - {self.penerima_tugas}")
-        pdf.image(qr_buf, x=165, y=pdf.get_y(), w=30)
+    # Mengetahui dan tanda tangan
+    c.setFont("Helvetica", 11)
+    c.drawString(2.5*cm, 6.5*cm, "Mengetahui,")
+    c.drawString(2.5*cm, 5.9*cm, "Direktur BUMDes")
+    c.drawString(2.5*cm, 4.8*cm, "(___________________)")
 
-        pdf.ln(35)
+    c.drawString(11.5*cm, 6.5*cm, "Pemberi Perintah,")
+    c.drawString(11.5*cm, 5.9*cm, "Nama:")
+    c.drawString(11.5*cm, 5.3*cm, "Jabatan:")
+    c.drawString(11.5*cm, 4.3*cm, "(___________________)")
 
-        # Tanda Tangan
-        pdf.cell(0, 8, "Mengetahui,", ln=True)
-        pdf.cell(0, 8, "Direktur BUMDes BUWANA RAHARJA", ln=True)
-        pdf.ln(20)
-        pdf.cell(0, 8, "____________________________", ln=True)
+    # Barcode
+    barcode_path = generate_barcode(spk_number)
+    c.drawImage(barcode_path, width - 6*cm, 1.5*cm, width=4.5*cm, preserveAspectRatio=True)
 
-        pdf.ln(15)
-        pdf.cell(0, 8, "Pemberi Perintah,", ln=True)
-        pdf.cell(0, 8, "Nama: ______________________", ln=True)
-        pdf.cell(0, 8, "Jabatan: ____________________", ln=True)
+    c.showPage()
+    c.save()
 
-        # Output PDF
-        output = BytesIO()
-        pdf.output(output)
-        return output
+    buffer.seek(0)
+    return buffer
+
+def run():
+    st.title("📄 Generator SPK BUMDes BUWANA Raharja")
+
+    with st.form("spk_form"):
+        spk_number = st.text_input("Nomor SPK", value=f"SPK-{datetime.now().strftime('%Y%m%d%H%M%S')}")
+        nama_penerima = st.text_input("Nama Penerima Perintah")
+        jabatan_penerima = st.text_input("Jabatan Penerima")
+        kegiatan = st.text_area("Rincian Kegiatan", height=150)
+        submitted = st.form_submit_button("📝 Generate SPK")
+
+    if submitted:
+        pdf_buffer = generate_spk_pdf(spk_number, kegiatan, nama_penerima, jabatan_penerima)
+        st.success("✅ SPK berhasil dibuat!")
+
+        st.download_button(
+            label="⬇️ Unduh SPK PDF",
+            data=pdf_buffer,
+            file_name=f"{spk_number}.pdf",
+            mime="application/pdf"
+        )
+
+        # Hapus barcode sementara
+        try:
+            os.remove(f"barcode_{spk_number}.png")
+        except:
+            pass
