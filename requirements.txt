@@ -1,7 +1,6 @@
-
 streamlit
+fpdf
 pandas
+matplotlib
 openpyxl
-qrcode
-fpdf==1.7.2
 streamlit-option-menu
