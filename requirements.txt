@@ -4,7 +4,7 @@ pandas
 matplotlib
 openpyxl
 streamlit-option-menu
-fpdf
-qrcode
-python-barcode
-reportlab
+fpdf==1.7.2
+qrcode==7.4.2
+python-barcode==0.14.0
+reportlab==3.6.12
