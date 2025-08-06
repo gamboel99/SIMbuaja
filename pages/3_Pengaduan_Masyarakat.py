@@ -1,0 +1,25 @@
+import streamlit as st
+import pandas as pd
+import os
+
+file_path = "data/pengaduan.csv"
+
+st.title("Form Pengaduan Masyarakat")
+
+with st.form("Form Pengaduan"):
+    nama = st.text_input("Nama Pengadu")
+    isi = st.text_area("Isi Pengaduan")
+    if st.form_submit_button("Kirim"):
+        new = pd.DataFrame([[nama, isi]], columns=["Nama", "Pengaduan"])
+        if os.path.exists(file_path):
+            df = pd.read_csv(file_path)
+            df = pd.concat([df, new], ignore_index=True)
+        else:
+            df = new
+        df.to_csv(file_path, index=False)
+        st.success("Pengaduan telah dikirim.")
+
+if os.path.exists(file_path):
+    st.subheader("Data Pengaduan Masuk")
+    df = pd.read_csv(file_path)
+    st.dataframe(df)
