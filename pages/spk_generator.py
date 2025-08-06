@@ -1,65 +1,57 @@
-import streamlit as st
-import pandas as pd
-import qrcode
 from fpdf import FPDF
 from io import BytesIO
-from PIL import Image
+from datetime import date
 
-st.set_page_config(page_title="Generator SPK", layout="centered")
+class SPKGenerator:
+    def __init__(self, nama_kegiatan, tanggal_mulai, tanggal_selesai, lokasi, penerima_tugas, uraian_tugas):
+        self.nama_kegiatan = nama_kegiatan
+        self.tanggal_mulai = tanggal_mulai
+        self.tanggal_selesai = tanggal_selesai
+        self.lokasi = lokasi
+        self.penerima_tugas = penerima_tugas
+        self.uraian_tugas = uraian_tugas
 
-st.title("📄 Generator Surat Perintah Kerja (SPK)")
-st.markdown("Silakan isi data berikut untuk membuat SPK dalam format PDF.")
+    def generate_pdf(self):
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font("Arial", size=12)
 
-# Form input data SPK
-with st.form("spk_form"):
-    nama_pekerjaan = st.text_input("Nama Pekerjaan")
-    nomor_spk = st.text_input("Nomor SPK")
-    tanggal_spk = st.date_input("Tanggal SPK")
-    nama_pelaksana = st.text_input("Nama Pelaksana")
-    jabatan_pelaksana = st.text_input("Jabatan Pelaksana")
-    uraian_tugas = st.text_area("Uraian Tugas")
+        pdf.set_title("Surat Perintah Kerja")
 
-    submit = st.form_submit_button("✅ Buat SPK")
+        # Header
+        pdf.set_font("Arial", "B", 14)
+        pdf.cell(0, 10, "SURAT PERINTAH KERJA", ln=True, align="C")
+        pdf.set_font("Arial", "", 12)
+        pdf.cell(0, 10, "BUMDes BUWANA RAHARJA", ln=True, align="C")
+        pdf.ln(10)
 
-if submit:
-    # Buat QR Code dari nomor SPK
-    qr = qrcode.make(f"SPK: {nomor_spk}")
-    qr_bytes = BytesIO()
-    qr.save(qr_bytes)
-    qr_bytes.seek(0)
-    qr_img = Image.open(qr_bytes)
+        # Isi SPK
+        pdf.multi_cell(0, 8, f"Dengan ini memberikan tugas kepada:")
+        pdf.multi_cell(0, 8, f"Nama           : {self.penerima_tugas}")
+        pdf.multi_cell(0, 8, f"Untuk melaksanakan kegiatan sebagai berikut:")
+        pdf.multi_cell(0, 8, f"Nama Kegiatan  : {self.nama_kegiatan}")
+        pdf.multi_cell(0, 8, f"Lokasi         : {self.lokasi}")
+        pdf.multi_cell(0, 8, f"Durasi         : {self.tanggal_mulai} s.d. {self.tanggal_selesai}")
+        pdf.multi_cell(0, 8, f"Uraian Tugas   :\n{self.uraian_tugas}")
+        pdf.ln(10)
 
-    # Buat file PDF
-    pdf = FPDF()
-    pdf.add_page()
-    pdf.set_font("Arial", size=12)
+        # Tanggal
+        pdf.multi_cell(0, 8, f"Demikian surat perintah ini dibuat untuk dapat dilaksanakan sebagaimana mestinya.")
+        pdf.ln(20)
 
-    pdf.cell(200, 10, txt="SURAT PERINTAH KERJA", ln=True, align='C')
-    pdf.ln(10)
-    pdf.cell(200, 10, txt=f"Nomor: {nomor_spk}", ln=True)
-    pdf.cell(200, 10, txt=f"Tanggal: {tanggal_spk.strftime('%d-%m-%Y')}", ln=True)
-    pdf.ln(5)
-    pdf.multi_cell(0, 10, txt=f"Nama Pekerjaan: {nama_pekerjaan}")
-    pdf.multi_cell(0, 10, txt=f"Nama Pelaksana: {nama_pelaksana}")
-    pdf.multi_cell(0, 10, txt=f"Jabatan: {jabatan_pelaksana}")
-    pdf.multi_cell(0, 10, txt=f"Uraian Tugas:\n{uraian_tugas}")
-    pdf.ln(10)
-    pdf.cell(0, 10, txt="Tanda tangan pelaksana:", ln=True)
-    pdf.ln(20)
-    pdf.cell(0, 10, txt=f"( {nama_pelaksana} )", ln=True)
+        # Tanda tangan
+        pdf.cell(100, 10, "Mengetahui,", ln=0)
+        pdf.cell(0, 10, "Kepala/Pemberi Perintah,", ln=1)
+        pdf.cell(100, 10, "Direktur BUMDes", ln=0)
+        pdf.cell(0, 10, "(Nama dan Jabatan)", ln=1)
 
-    # Simpan PDF ke memori
-    pdf_output = BytesIO()
-    pdf.output(pdf_output)
-    pdf_output.seek(0)
+        # Kosongkan tempat tanda tangan
+        pdf.ln(20)
+        pdf.cell(100, 10, "(............................)", ln=0)
+        pdf.cell(0, 10, "(............................)", ln=1)
 
-    st.success("✅ SPK berhasil dibuat!")
-    st.download_button(
-        label="📥 Download SPK PDF",
-        data=pdf_output,
-        file_name=f"SPK_{nomor_spk}.pdf",
-        mime="application/pdf"
-    )
-
-    # Tampilkan QR Code
-    st.image(qr_img, caption="QR Code SPK", width=150)
+        # Output sebagai file dalam memori
+        pdf_output = BytesIO()
+        pdf.output(pdf_output)
+        pdf_output.seek(0)
+        return pdf_output
