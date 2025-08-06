@@ -5,13 +5,17 @@ import pandas as pd
 from datetime import datetime
 
 st.title("📋 Rencana Kerja Manajemen BUMDes")
-
-jabatan = st.selectbox("Pilih Jabatan", ["Direktur Utama", "Sekretaris", "Bendahara"])
-periode = st.selectbox("Pilih Periode", ["Harian", "Mingguan", "Bulanan", "Tahunan"])
-tanggal = st.date_input("Tanggal Rencana", value=datetime.today())
-kegiatan = st.text_input("Kegiatan")
-tujuan = st.text_area("Tujuan Kegiatan (kaitkan dengan jabatan lain)")
-indikator = st.text_area("Indikator Keberhasilan")
+{
+    "jabatan": "Direktur Utama",  # atau Sekretaris / Bendahara
+    "tingkat": "Harian",  # atau Mingguan, Bulanan, Tahunan
+    "tanggal": "2025-08-07",
+    "nama_kegiatan": "Koordinasi rutin dengan sekretaris",
+    "tujuan": "Sinkronisasi data SPK dan laporan keuangan",  # dropdown terkait jabatan lain
+    "indikator_keberhasilan": "Tersusun notulen dan laporan ringkas",  # pilihan + custom
+    "output": "Notulen rapat",  # isian opsional
+    "catatan": "Dilakukan via Zoom karena Direktur di luar kota",
+    "status": "Belum Dilaksanakan"  # bisa diganti jadi dropdown update
+}
 
 if st.button("Simpan Rencana Kerja"):
     new_data = {
