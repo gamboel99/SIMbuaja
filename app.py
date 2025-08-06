@@ -1,6 +1,21 @@
 
 import streamlit as st
 from login import login_form
+import streamlit as st
+
+st.set_page_config(page_title="Rencana Kerja BUMDes", layout="wide")
+st.title("📚 Sistem Rencana Kerja BUMDes Buwana Raharja")
+
+st.markdown("""
+Selamat datang di sistem manajemen rencana kerja dan evaluasi kinerja.
+Silakan gunakan menu di sebelah kiri untuk:
+- Mengisi rencana kerja per jabatan
+- Melihat tabel rencana
+- Menerbitkan SPK
+- Mengevaluasi capaian kinerja
+
+💡 Sistem ini terintegrasi antar jabatan dan mendukung pemantauan berkelanjutan.
+""")
 
 st.set_page_config(page_title="SIM BUMDes PRO", layout="wide")
 st.title("🧮 Sistem Informasi Manajemen BUMDes Buwana Raharja")
