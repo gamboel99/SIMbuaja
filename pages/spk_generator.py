@@ -2,7 +2,7 @@ import streamlit as st
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import cm
-import python-barcode
+import barcode
 from barcode.writer import ImageWriter
 from PIL import Image
 import os
