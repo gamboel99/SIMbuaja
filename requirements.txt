@@ -1,8 +1,8 @@
-
 streamlit
 pandas
 matplotlib
 openpyxl
 streamlit-option-menu
-pip install fpdf qrcode streamlit
+fpdf
+qrcode
 reportlab
