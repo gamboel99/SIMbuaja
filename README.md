@@ -1,19 +1,25 @@
-# SIM BUMDes Buwana Raharja
+# SIM BUMDes Buwana Raharja (Versi Profesional)
 
-Sistem Informasi Manajemen berbasis Streamlit untuk BUMDes Buwana Raharja, Desa Keling.
+## Fitur Utama
+- Dashboard
+- Manajemen Unit Usaha
+- Laporan Keuangan
+- Struktur Organisasi
+- Form Pengaduan
+- Dokumentasi Kegiatan
+- Login Admin/Operator
 
-## Fitur
-- Dashboard ringkasan
-- Manajemen data unit usaha
-- Form pengaduan masyarakat
-- Laporan keuangan
-
-## Menjalankan Aplikasi
+## Cara Menjalankan
 ```bash
 pip install -r requirements.txt
 streamlit run app.py
 ```
 
+## Login Default
+- Username: admin
+- Password: admin123
+
 ## Deploy ke Streamlit Cloud
-1. Push repo ke GitHub
-2. Deploy di https://streamlit.io/cloud
+1. Push ke GitHub
+2. Hubungkan ke https://streamlit.io/cloud
+3. Deploy dan jalankan
