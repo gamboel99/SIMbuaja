@@ -5,7 +5,6 @@ import pandas as pd
 from datetime import datetime
 
 st.title("📋 Rencana Kerja Manajemen BUMDes")
-{
     "jabatan": "Direktur Utama",  # atau Sekretaris / Bendahara
     "tingkat": "Harian",  # atau Mingguan, Bulanan, Tahunan
     "tanggal": "2025-08-07",
@@ -15,7 +14,6 @@ st.title("📋 Rencana Kerja Manajemen BUMDes")
     "output": "Notulen rapat",  # isian opsional
     "catatan": "Dilakukan via Zoom karena Direktur di luar kota",
     "status": "Belum Dilaksanakan"  # bisa diganti jadi dropdown update
-}
 
 if st.button("Simpan Rencana Kerja"):
     new_data = {
